@@ -23,9 +23,7 @@ sectors = {
     "XLC":  "Communication",
 }
 
-# ------------------------------------------------------------------
 # pull 3 years of price data
-# ------------------------------------------------------------------
 
 print("grabbing price data...")
 tickers = list(sectors.keys())
@@ -35,11 +33,9 @@ prices.columns = [sectors[t] for t in prices.columns]
 # daily percent change -- this is what we actually care about
 daily_returns = prices.pct_change().dropna()
 
-# ------------------------------------------------------------------
 # basic stats -- annualized return and standard deviation
 # std dev is basically how "jumpy" each sector is day to day
 # annualize by multiplying by sqrt(252) -- there are ~252 trading days/year
-# ------------------------------------------------------------------
 
 avg_return = daily_returns.mean() * 252        # annualized
 volatility = daily_returns.std() * (252**0.5)  # annualized std dev
@@ -52,11 +48,9 @@ summary = pd.DataFrame({
 print("\n--- sector stats ---")
 print(summary.to_string())
 
-# ------------------------------------------------------------------
 # covariance matrix using linear algebra
 # cov(X, Y) = E[(X - mean_X)(Y - mean_Y)]
 # in matrix form: (1/n) * X^T * X  (where X is mean-centered)
-# ------------------------------------------------------------------
 
 n = len(daily_returns)
 mean_centered = daily_returns - daily_returns.mean()
@@ -69,9 +63,7 @@ cov_df = pd.DataFrame(cov_matrix, index=daily_returns.columns, columns=daily_ret
 print("\ncovariance matrix (annualized):")
 print((cov_df * 252).round(6).to_string())
 
-# ------------------------------------------------------------------
 # chart 1: bar chart of volatility by sector
-# ------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(10, 5))
 colors = ["#e74c3c" if v > volatility.mean() else "#3498db" for v in volatility]
@@ -86,11 +78,9 @@ plt.savefig("sector_volatility.png", dpi=150)
 plt.close()
 print("\nsaved: sector_volatility.png")
 
-# ------------------------------------------------------------------
 # chart 2: correlation heatmap
 # correlation = covariance(X,Y) / (std(X) * std(Y))
 # goes from -1 (opposite) to +1 (move together)
-# ------------------------------------------------------------------
 
 corr_matrix = daily_returns.corr()
 
@@ -111,10 +101,8 @@ plt.savefig("correlation_heatmap.png", dpi=150)
 plt.close()
 print("saved: correlation_heatmap.png")
 
-# ------------------------------------------------------------------
 # chart 3: risk vs return scatter
 # sectors in the top-left corner are best (high return, low risk)
-# ------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(9, 6))
 for sector in avg_return.index:
